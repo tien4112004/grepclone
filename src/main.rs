@@ -15,7 +15,7 @@ fn main() {
 
     let flags = Flags::set_flags(&args);
 
-    let contextType = match (
+    let context_type = match (
         args.value_of("before-context"),
         args.value_of("after-context"),
         args.value_of("both-context"),
@@ -30,7 +30,7 @@ fn main() {
         (pattern, flags.ignore_case),
         input,
         &flags,
-        contextType,
+        context_type,
         group_separator,
     ) {
         fatal!("Error: {e}");

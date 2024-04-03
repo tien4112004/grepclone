@@ -195,21 +195,23 @@ fn print_before_context<T: BufRead + Sized>(
         for (i, line) in lines.iter().enumerate() {
             let starting_point = matched_number.saturating_sub(context_size);
             if i >= starting_point && i <= *matched_number {
-                let mut matched_line = line.clone();
-                let match_iter = re.find_iter(line);
+                if (i == *matched_number) && (flags.highlight) {
+                    let mut matched_line = line.clone();
+                    let match_iter = re.find_iter(line);
 
-                match_iter.for_each(|matched| {
-                    matched_line = re
-                        .replace_all(
-                            &matched_line,
-                            Colors::colorize_pattern(Colors::Red, matched.as_str()),
-                        )
-                        .to_string()
-                });
+                    match_iter.for_each(|matched| {
+                        matched_line = re
+                            .replace_all(
+                                &matched_line,
+                                Colors::colorize_pattern(Colors::Red, matched.as_str()),
+                            )
+                            .to_string()
+                    });
 
-                matched_lines[j].push((i, matched_line));
-            } else {
-                matched_lines[j].push((i, line.clone()));
+                    matched_lines[j].push((i, matched_line));
+                } else {
+                    matched_lines[j].push((i, line.clone()));
+                }
             }
         }
     }
@@ -285,9 +287,9 @@ fn print_after_context<T: BufRead + Sized>(
                             .to_string();
                     });
                     matched_lines[j].push((i, matched_line));
+                } else {
+                    matched_lines[j].push((i, line.clone()));
                 }
-            } else {
-                matched_lines[j].push((i, line.clone()));
             }
         }
     }
