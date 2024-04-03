@@ -18,11 +18,11 @@ fn main() {
     let context_type = match (
         args.value_of("before-context"),
         args.value_of("after-context"),
-        args.value_of("both-context"),
+        args.value_of("context"),
     ) {
         (Some(before), None, None) => ContextType::Before(before),
         (None, Some(after), None) => ContextType::After(after),
-        (None, None, Some(both)) => ContextType::Both(both),
+        (None, None, Some(both)) => ContextType::Context(both),
         _ => ContextType::None,
     };
 

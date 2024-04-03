@@ -90,10 +90,10 @@ impl<'cli> Cli<'cli> {
                 .required(false)
             )
             .arg(
-                Arg::with_name("both-context")
+                Arg::with_name("context")
                 .help("print NUM lines of output context")
                 .short('C')
-                .long("both-context")
+                .long("context")
                 .value_name("NUM")
                 .takes_value(true)
                 .required(false)

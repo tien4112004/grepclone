@@ -44,7 +44,7 @@ pub(crate) fn build_regex(pattern: &str, ignore_case: bool) -> Result<regex::Reg
 pub(crate) enum ContextType<'context> {
     After(&'context str),
     Before(&'context str),
-    Both(&'context str),
+    Context(&'context str),
     None,
 }
 

@@ -154,10 +154,9 @@ fn choose_process<T: BufRead + Sized>(
             print_after_context(reader, re, flags, after_ctx, group_separator, writer)?
         }
 
-        ContextType::Both(both_ctx) => {
-            let both_ctx = parse_context(both_ctx)?;
-            print_before_context(reader, re, flags, both_ctx, group_separator, writer)?;
-            // print_after_context(reader, re, flags, both_ctx, group_separator, writer)?;
+        ContextType::Context(ctx) => {
+            let ctx = parse_context(ctx)?;
+            print_context(reader, re, flags, ctx, group_separator, writer)?;
         }
 
         ContextType::None => {
@@ -319,6 +318,90 @@ fn print_after_context<T: BufRead + Sized>(
         } else {
             for (_, line) in matched_line.iter() {
                 writeln!(writer, "{}", line)?;
+            }
+        }
+    }
+
+    writer.flush()?;
+    Ok(())
+}
+
+fn print_context<T: BufRead + Sized>(
+    reader: T,
+    re: Regex,
+    flags: &Flags,
+    context_size: usize,
+    group_separator: &str,
+    mut writer: impl Write,
+) -> Result<(), CliError> {
+    let lines = reader
+        .lines()
+        .collect::<std::io::Result<Vec<String>>>()
+        .unwrap();
+
+    let mut matched_line_numbers: Vec<usize> = Vec::with_capacity(lines.len());
+    let mut matched_lines: Vec<Vec<(usize, String)>> = Vec::with_capacity(lines.len());
+
+    for (i, line) in lines.iter().enumerate() {
+        if re.find(line).is_none() {
+            continue;
+        }
+
+        matched_line_numbers.push(i);
+        let v = Vec::with_capacity(context_size + 2);
+        matched_lines.push(v);
+    }
+
+    for (j, matched_number) in matched_line_numbers.iter().enumerate() {
+        for (i, line) in lines.iter().enumerate() {
+            let starting_point = matched_number.saturating_sub(context_size);
+            let ending_point = matched_number + context_size;
+            if (i >= starting_point) && (i <= ending_point) {
+                if (i == *matched_number) && (flags.highlight) {
+                    let mut matched_line = line.clone();
+                    re.find_iter(line).for_each(|matched| {
+                        matched_line = re
+                            .replace_all(
+                                &matched_line,
+                                Colors::colorize_pattern(Colors::Red, matched.as_str()),
+                            )
+                            .to_string();
+                    });
+                    matched_lines[j].push((i, matched_line));
+                } else {
+                    matched_lines[j].push((i, line.clone()));
+                }
+            }
+        }
+    }
+
+    for (matched_line, is_last, is_first) in matched_lines
+        .iter()
+        .enumerate()
+        .map(|(index, m)| (m, index == matched_lines.len(), index == 0))
+    {
+        if !is_first && !is_last {
+            writeln!(
+                writer,
+                "{}",
+                Colors::colorize_pattern(Colors::Yellow, group_separator)
+            )
+            .unwrap();
+        }
+
+        if flags.line_number {
+            for (i, line) in matched_line.iter() {
+                writeln!(
+                    writer,
+                    "{}: {}",
+                    Colors::colorize_pattern(Colors::Green, &format!("{}", i + 1)),
+                    line
+                )
+                .unwrap();
+            }
+        } else {
+            for (_, line) in matched_line.iter() {
+                writeln!(writer, "{}", line).unwrap();
             }
         }
     }
