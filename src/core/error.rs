@@ -2,10 +2,10 @@ use std::fmt::Display;
 use std::io;
 use std::num;
 
-use owo_colors::OwoColorize;
-use regex::Regex;
+// use owo_colors::OwoColorize;
+// use regex::Regex;
 
-use super::cli::Cli;
+// use super::cli::Cli;
 
 #[macro_export]
 macro_rules! fatal {

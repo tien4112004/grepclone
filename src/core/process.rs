@@ -8,7 +8,7 @@ use crate::core::flag::Flags;
 use crate::core::utils::build_regex;
 use crate::getwriter;
 
-use super::flag;
+// use super::flag;
 use super::utils::Colors;
 // use crate::core::utils::getwriter;
 
@@ -72,9 +72,9 @@ fn print_matches<T: BufRead + Sized>(
 
             _ => (), // the rest
         }
-        writeln!(writer, "{}", matched_line);
+        writeln!(writer, "{}", matched_line)?;
     }
-    writer.flush();
+    writer.flush()?;
     Ok(())
 }
 
@@ -102,7 +102,7 @@ fn print_no_matches<T: BufRead + Sized>(
         }
     }
 
-    writer.flush();
+    writer.flush()?;
     Ok(())
 }
 
@@ -118,35 +118,34 @@ pub(crate) fn prepare_and_choose(
         let stdin = io::stdin();
         let stdin_reader = BufReader::new(stdin.lock());
         let writer = getwriter!();
-        choose_process(stdin_reader, re, writer, flags, group_seperator);
+        choose_process(stdin_reader, re, writer, flags, group_seperator)?;
     } else {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
         let writer = getwriter!();
-        choose_process(reader, re, writer, flags, group_seperator);
+        choose_process(reader, re, writer, flags, group_seperator)?;
     }
 
     Ok(())
 }
 
 fn choose_process<T: BufRead + Sized>(
-    mut reader: T,
+    reader: T,
     re: regex::Regex,
     writer: impl Write,
     flags: &Flags,
     group_separator: &str,
 ) -> Result<(), CliError> {
-    print!("We entered here3");
     if flags.count {
         println!("{}", count_matches(reader, re));
         return Ok(());
     } else if flags.no_match {
-        print_no_matches(reader, re, flags, writer);
+        print_no_matches(reader, re, flags, writer)?;
         return Ok(());
     } else {
-        print_matches(reader, re, flags, writer);
+        print_matches(reader, re, flags, writer)?;
         return Ok(());
     }
 
-    Ok(())
+    // Ok(())
 }
