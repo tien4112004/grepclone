@@ -24,7 +24,7 @@ impl<'cli> Cli<'cli> {
             )
             .arg(
                 Arg::with_name("count")
-                    .help("Supresses normal output and instead prints number of matching lines")
+                    .help("print only a count of selected lines per FILE")
                     .short('c')
                     .long("count")
                     .takes_value(false)
@@ -32,12 +32,12 @@ impl<'cli> Cli<'cli> {
             )
             .arg(
                 Arg::with_name("line-number")
-                    .help("Giving out line number within its input file.")
+                    .help("print line number with output line")
                     .short('n')
                     .long("line-number")
                     .takes_value(false)
                     .required(false)
-            )
+                )
             .arg(
                 Arg::with_name("highlight")
                     .help("Highlight matched words.")
@@ -55,10 +55,10 @@ impl<'cli> Cli<'cli> {
                     .required(false)
             )
             .arg(
-                Arg::with_name("no-match")
-                    .help("Select the non-matching lines.")
-                    .short('z')
-                    .long("no-match")
+                Arg::with_name("invert-match")
+                    .help("Select non-matching lines.")
+                    .short('v')
+                    .long("invert-match")
                     .takes_value(false)
                     .required(false)
             )
@@ -70,6 +70,33 @@ impl<'cli> Cli<'cli> {
                     .value_name("SEP")
                     .takes_value(true)
                     .required(false)
+            )
+            .arg(
+                Arg::with_name("before-context")
+                .help("print NUM lines of leading context")
+                .short('B')
+                .long("before-context")
+                .value_name("NUM")
+                .takes_value(true)
+                .required(false)
+            )
+            .arg(
+                Arg::with_name("after-context")
+                .help("print NUM lines of trailing context")
+                .short('A')
+                .long("after-context")
+                .value_name("NUM")
+                .takes_value(true)
+                .required(false)
+            )
+            .arg(
+                Arg::with_name("both-context")
+                .help("print NUM lines of output context")
+                .short('C')
+                .long("both-context")
+                .value_name("NUM")
+                .takes_value(true)
+                .required(false)
             );
 
         Self { app }

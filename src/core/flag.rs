@@ -6,7 +6,7 @@ pub struct Flags {
     pub line_number: bool,
     pub highlight: bool,
     pub ignore_case: bool,
-    pub no_match: bool,
+    pub invert_match: bool,
 }
 
 impl Flags {
@@ -21,7 +21,7 @@ impl Flags {
         flags.line_number = a.is_present("line-number");
         flags.highlight = a.is_present("highlight");
         flags.ignore_case = a.is_present("ignore-case");
-        flags.no_match = a.is_present("no-match");
+        flags.invert_match = a.is_present("invert-match");
 
         flags
     }

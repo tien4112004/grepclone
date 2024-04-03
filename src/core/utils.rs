@@ -31,11 +31,23 @@ impl Colors {
 }
 
 pub(crate) fn build_regex(pattern: &str, ignore_case: bool) -> Result<regex::Regex, CliError> {
-    let mut builder = RegexBuilder::new(pattern);
+    let re = match ignore_case {
+        true => RegexBuilder::new(pattern).case_insensitive(true).build()?,
 
-    if ignore_case {
-        builder.case_insensitive(true);
-    }
+        false => RegexBuilder::new(pattern).build()?,
+    };
 
-    builder.build().map_err(|e| CliError::Regex(e))
+    Ok(re)
+}
+
+#[derive(Clone, Copy)]
+pub(crate) enum ContextType<'context> {
+    After(&'context str),
+    Before(&'context str),
+    Both(&'context str),
+    None,
+}
+
+pub(crate) fn parse_context(context: &str) -> Result<usize, CliError> {
+    context.parse::<usize>().map_err(|e| e.into())
 }
