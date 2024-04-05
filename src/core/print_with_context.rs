@@ -74,7 +74,7 @@ pub fn print_before_context<T: BufRead + Sized>(
 ) -> Result<(), CliError> {
     let lines = reader.lines().collect::<std::io::Result<Vec<String>>>()?;
 
-    let mut matched_lines: Vec<Vec<(usize, String)>> = Vec::with_capacity(lines.len());
+    let mut matched_lines: Vec<Vec<(usize, String)>> = Vec::new();
 
     let mut current_group: Vec<(usize, String)> = Vec::new();
     let mut last_line_added = 0;
@@ -85,7 +85,7 @@ pub fn print_before_context<T: BufRead + Sized>(
         }
 
         if let Some((last_index, _)) = current_group.last() {
-            if *last_index != i - 1 {
+            if *last_index + context_size < i {
                 matched_lines.push(current_group.clone());
                 current_group = Vec::with_capacity(context_size * 2 + 1);
             }
@@ -106,12 +106,11 @@ pub fn print_before_context<T: BufRead + Sized>(
         matched_lines.push(current_group);
     }
 
-    for (matched_line, is_last, is_first) in matched_lines
-        .iter()
-        .enumerate()
-        .map(|(index, m)| (m, index == matched_lines.len(), index == 0))
-    {
-        if !is_first && !is_last {
+    for (index, matched_line) in matched_lines.iter().enumerate() {
+        let is_first = index == 0;
+        let is_last = index == matched_lines.len() - 1;
+
+        if !is_first {
             writeln!(
                 writer,
                 "{}",

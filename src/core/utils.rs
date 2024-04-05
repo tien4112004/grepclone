@@ -15,7 +15,7 @@ macro_rules! getwriter {
 pub(crate) enum Colors {
     Red,
     Green,
-    // Blue,
+    Blue,
     Yellow,
 }
 
