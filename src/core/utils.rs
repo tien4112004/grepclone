@@ -15,12 +15,12 @@ macro_rules! getwriter {
 pub(crate) enum Colors {
     Red,
     Green,
-    Blue,
+    // Blue,
     Yellow,
 }
 
 impl Colors {
-    pub(crate) fn colorize_pattern(color: Self, pattern: &str) -> String {
+    pub(crate) fn colorize_text(color: Self, pattern: &str) -> String {
         match color {
             Colors::Red => pattern.red().to_string(),
             Colors::Green => pattern.green().to_string(),

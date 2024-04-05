@@ -18,7 +18,7 @@ impl<'cli> Cli<'cli> {
             )
             .arg(
                 Arg::with_name("input")
-                    .help("[OPTIONAL] File to search in. If omitted, takes input from STDIN.")
+                    .help("[OPTIONAL] File to search in. If omitted, takes input from STDIN, end by press Ctrl-D.")
                     .takes_value(true)
                     .required(false),
             )
@@ -39,8 +39,16 @@ impl<'cli> Cli<'cli> {
                     .required(false)
                 )
             .arg(
+                Arg::with_name("byte-offset")
+                    .help("print the byte offset with output lines")
+                    .short('b')
+                    .long("byte-offset")
+                    .takes_value(false)
+                    .required(false)
+            )
+            .arg(
                 Arg::with_name("highlight")
-                    .help("Highlight matched words.")
+                    .help("highlight matched words.")
                     .short('l')
                     .long("highlight")
                     .takes_value(false)
@@ -48,7 +56,7 @@ impl<'cli> Cli<'cli> {
             )
             .arg(
                 Arg::with_name("ignore-case")
-                    .help("Ignore case distinction.")
+                    .help("ignore case distinction.")
                     .short('i')
                     .long("ignore-case")
                     .takes_value(false)
@@ -56,7 +64,7 @@ impl<'cli> Cli<'cli> {
             )
             .arg(
                 Arg::with_name("invert-match")
-                    .help("Select non-matching lines.")
+                    .help("select non-matching lines.")
                     .short('v')
                     .long("invert-match")
                     .takes_value(false)
@@ -64,7 +72,7 @@ impl<'cli> Cli<'cli> {
             )
             .arg(
                 Arg::with_name("group-separator")
-                    .help("Use SEP as the group separator. By default, SEP is a triple hyphen (---).")
+                    .help("use SEP as the group separator. By default, SEP is a triple hyphen (---).")
                     .short('s')
                     .long("group-separator")
                     .value_name("SEP")
